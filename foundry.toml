@@ -1,0 +1,22 @@
+[profile.default]
+src = 'contracts'
+out = 'out'
+test = 'test'
+libs = ['node_modules', 'lib']
+script = 'scripts/foundry'
+cache_path = 'cache-forge'
+gas_reports = ["*"]
+via_ir = false
+sizes = true
+optimizer_runs=1000
+solc_version = '0.8.19'
+fs_permissions = [{ access = "read-write", path = "./scripts/foundry/transaction.json"}]
+
+ffi = true
+
+[rpc_endpoints]
+arbitrum = "${ETH_NODE_URI_ARBITRUM}"
+mainnet = "${ETH_NODE_URI_MAINNET}"
+optimism = "${ETH_NODE_URI_OPTIMISM}"
+polygon = "${ETH_NODE_URI_POLYGON}"
+fork = "${ETH_NODE_URI_FORK}"

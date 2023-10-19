@@ -1,0 +1,18 @@
+## Defaults
+__pycache__
+.idea
+.DS_Store
+.deps
+.vscode
+.env
+node_modules
+venv
+build
+dist
+scripts/foundry/transaction.json
+cache
+
+
+# foundry
+/out
+/cache-forge

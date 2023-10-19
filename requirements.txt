@@ -1,0 +1,6 @@
+requests
+dotenv
+eth_account
+web3
+hexbytes
+click
