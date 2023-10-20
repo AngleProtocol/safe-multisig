@@ -2,14 +2,14 @@
 
 Streamline your [Safe multisig](https://safe.global/) transaction maintenance using [Foundry](https://github.com/foundry-rs/foundry).
 
-# Table of Contents
+## Table of Contents
 
-- [What is it?](#what-is-it)
+- [Why a multisig management repo?](#why-a-multisig-management-repo)
 - [Usage](#usage)
   - [Overview](#overview)
   - [Add Delegate](#add-delegate)
-  - [Scripts: Propose](#scripts-propose)
-  - [Scripts: Verify](#scripts-verify)
+  - [Propose a transaction](#propose-a-transaction)
+  - [Verify a transaction](#verify-a-transaction)
   - [Push Transaction to Gnosis](#push-a-transaction-to-gnosis)
 - [Examples](#examples)
 - [Getting Started](#getting-started)
@@ -17,27 +17,19 @@ Streamline your [Safe multisig](https://safe.global/) transaction maintenance us
   - [Install Packages](#install-packages)
   - [Setup Environment](#setup-environment)
 
-## What is it?
+## Why a multisig management repo?
 
-At [AngleProtocol](https://github.com/AngleProtocol), there are some maintenance done through [Safe](https://safe.global/) multisigs. Doing this manually through the Safe interface can be cumbersome, especially when dealing with numerous transactions.
+Maintenance of smart contracts system through [Safe](https://safe.global/) multisigs can be cumbersome, especially if relying on the Safe interface to do this.
 
-First, because you can end up with tens-hundreds of transactions doing the same logic but for different parameters/collaterals/etc. Also because building transactions by hand with the `Transaction Builder` can be error prone and fastidious. And more.
+You may end up doing tens or hundreds of transactions with the same logic but different parameters, or craft complex transactions with the `Transaction Builder` which can be error prone and fastidious.
 
-Our challenges included:
-
-- set borrowing rates accross all collaterals and al chains
-- set savings agEUR (stEUR) on all chains. Defining the annual return on staked agEUR
-- whitelist tokens: Merkl reward tokens,...
-
-These are specific examples, but it is generalizable to any need you have.
-
-We are big supporters of [Safe](https://safe.global/) and [Foundry](https://github.com/foundry-rs/foundry), so we decided to build a tool leveraging both. With the goa lto make protocol contributors, institutional safe owner and personal safe owners life easier to manage any multisig interaction: protocol maintenance, funds, and more.
+This repo leverages both [Safe](https://safe.global/) and [Foundry](https://github.com/foundry-rs/foundry) to make the life of protocol contributors, institutional safe owner or personal safe owners easier when it comes to dealing with multisig interaction. This applies to any type of use case whether it is protocol maintenance, streaming funds, launching new features and more.
 
 ## Usage
 
 ### Overview
 
-To manage the multisig:
+To manage a multisig with this repo:
 
 1. Initially (done only once) set up a delegate for your organization to propose transactions on the Safe interface.
 2. For any new transaction, use a Foundry script to create (even a bundle of actions). Test this via Foundry, and then push it with the delegate address to Safe.
@@ -45,15 +37,29 @@ To manage the multisig:
 
 ### Add Delegate
 
-The [addDelegate.py](./addDelegate.py) file helps to add a delegate to a Gnosis Safe. A delegate is an address that can propose transactions to a Gnosis Safe, it does not have any on-chain right. The delegate address just has the right to mess up with the portal of waiting transactions associated to a safe. There are some other utility functions in this file.
+The [addDelegate.py](./addDelegate.py) file helps to add a delegate to a Gnosis Safe.
+
+A delegate is an address that can propose transactions to a Gnosis Safe, it does not have any onchain right. The delegate address just has the right to mess up with the portal of waiting transactions associated to a safe. There are some other utility functions in this file.
 
 The reason for introducing a delegate is that the address of the delegate can be unsafe and its private key can be stored in clear (because it never directly interacts with the blockchain).
 
-### Scripts: Propose
+### Propose a transaction
+
+#### Build your script
+
+To propose a transaction through the Gnosis Safe UI, what you first need is a script corresponding to the transaction you want to push.
+
+For example: `scripts/foundry/Example.s.sol` contains an example of a script designed to build the transaction to pause an ERC20 token that is pausable.
+
+You can craft any script within the [folder](scripts/foundry/) using Foundry
+
+In any case, you will need the script to compile before running it and so if calling functions of other contracts, you'll most likely need to provide the Solidity interfaces of the contracts that you'll be calling from your script.
+
+Once your script is ready, you can then prepare to submit it to your Gnosis Safe so your signers just have to sign it.
 
 #### Fork
 
-Some scripts need to make on chain calls, so you should run beforehand:
+Your script may need to make on chain calls, so you should run beforehand:
 
 ```bash
 yarn fork:{CHAIN_NAME}
@@ -63,29 +69,25 @@ Don't forget to update the scripts in [./package.json](./package.json), if you a
 
 #### Build the transaction
 
-You can run a script with
+You can run a script with:
 
 ```bash
-yarn script:fork <script-path> 
+yarn script:fork <script-path>
 ```
 
 For example:
 
 ```bash
-yarn script:fork scripts/foundry/Example.s.sol 
+yarn script:fork scripts/foundry/Example.s.sol
 ```
 
-which will generate an object in [scripts/foundry/transaction.json](scripts/foundry/transaction.json) with properties: chainId, data, operation, to, value. These are required to pass a transaction on Gnosis Safe.
+This will generate an object in [scripts/foundry/transaction.json](scripts/foundry/transaction.json) with properties: chainId, data, operation, to, value. These are required to pass a transaction on Gnosis Safe.
 
-#### Full expressivity
+### Verify a transaction
 
-You can craft any script within the [folder](scripts/foundry/) using Foundry
+You may want to test the validity of the transaction you submit to your multisig and verify the expected outcome.
 
-### Scripts: Verify
-
-Always test the transaction for validity: the multisig has the right to execute the transaction, verify the expected outcome.
-
-After generating the object via [Scripts: Propose](#scripts:-Propose), run:
+To do this, after generating the object via [Propose a Transaction](#propose-a-transaction), you can run:
 
 ```bash
 yarn test <test-contract-name>
@@ -99,20 +101,17 @@ yarn test ExampleTest
 
 ### Push a transaction to Gnosis
 
-Once satisfied, push the transaction to Safe:
+Once your tests are satisfied, you can push the transaction to your Safe with:
 
 ```bash
 yarn submit:foundry
 ```
 
-Ensure your [.env](./.env) is correctly set up, and you have the correct values in [scripts/foundry/transaction.json](scripts/foundry/transaction.json)
+Ensure your [.env](./.env) is correctly set up, and you have the correct values and addresses in [scripts/foundry/transaction.json](scripts/foundry/transaction.json)
 
 ## Examples
 
-This repository provides a general-purpose boilerplate. For specific implementations, refer to:
-
-- [Angle Multisig](https://github.com/AngleProtocol/angle-multisig): set with one call all CDP (aka Borrow module) interest rate on all collaterals, set PSM (aka Transmuter) fee structure,...
-- More examples will be added
+This repository provides a general-purpose boilerplate. For specific implementations, refer to [Angle Multisig](https://github.com/AngleProtocol/angle-multisig) repo which has examples of how to set interest rates across all Angle collateral assets or modify the fee structure of the PSM (aka Transmuter).
 
 ## Getting started
 
@@ -161,17 +160,13 @@ SAFE = ""
 CHAIN_ID = ""
 DELEGATE_ADDRESS = ""
 DELEGATOR_ADDRESS = ""
-DELEGATOR_PRIVATE_KEY = ""
-
-ETH_NODE_URI_RINKEBY=""
-MNEMONIC_RINKEBY=""
+PRIVATE_KEY = ""
 
 ETH_NODE_URI_MAINNET=""
 ETH_NODE_URI_POLYGON=""
 ETH_NODE_URI_OPTIMISM=""
 ETH_NODE_URI_ARBITRUM=""
 ETH_NODE_URI_AVALANCHE=""
-ETH_NODE_URI_FORK=""
 ```
 
-For more chains support add the necessary URIs for your specific chains
+For more chains support add the necessary URIs for your specific chains.
