@@ -9,12 +9,12 @@ from dotenv import load_dotenv
 
 # This file is here to add a delegate to a Gnosis
 # Being a delegate means that this address will get the right to submit transactions
-# that will appear in the Gnosis Safe App. A delegate is needed for us to push transactions
+# that will appear in the Gnosis Safe App. A delegate is needed to push transactions
 # without revealing our private keys on a script
 # This will enable us to easily build guardian scripts
 
-# TODO: Before doing this, a new owner should be added to the Safe (an owner for which we have the private key)
-# We can then revoke the owner
+# TODO: Before doing this, a new owner should be added to the Safe (an owner for which the private key is available)
+# This owner can then be revoked
 
 dotenv_path = join(dirname(__file__), '.env')
 load_dotenv(dotenv_path)
