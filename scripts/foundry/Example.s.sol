@@ -33,6 +33,6 @@ contract Example is Utils {
         vm.startBroadcast(safe);
         address(multiSend).delegatecall(payloadMultiSend);
         vm.stopBroadcast();
-        _serializeJson(chainId, multiSend, 0, payloadMultiSend, Enum.Operation.DelegateCall, data);
+        _serializeJson(chainId, safe, multiSend, 0, payloadMultiSend, Enum.Operation.DelegateCall, data);
     }
 }

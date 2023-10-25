@@ -12,6 +12,7 @@ import "./Constants.s.sol";
 contract Utils is Script {
     function _serializeJson(
         uint256 chainId,
+        address safe,
         address to,
         uint256 value,
         bytes memory data,
@@ -20,6 +21,7 @@ contract Utils is Script {
     ) internal {
         string memory json = "";
         vm.serializeUint(json, "chainId", chainId);
+        vm.serializeAddress(json, "safe", safe);
         vm.serializeAddress(json, "to", to);
         vm.serializeUint(json, "value", value);
         vm.serializeUint(json, "operation", uint256(operation));
