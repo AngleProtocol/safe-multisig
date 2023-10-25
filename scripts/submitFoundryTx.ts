@@ -4,9 +4,7 @@ import transactionJson from '../scripts/foundry/transaction.json';
 async function main() {
   const chainId = transactionJson['chainId'];
   console.log(transactionJson);
-  // TODO: Specify safeAddress here
-  const safeAddress = '';
-
+  const safeAddress = transactionJson['safe'];
   await submit(transactionJson, 0, chainId, safeAddress);
 }
 
