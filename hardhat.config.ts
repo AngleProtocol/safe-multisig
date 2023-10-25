@@ -16,9 +16,7 @@ import "hardhat-abi-exporter";
 import "@nomiclabs/hardhat-ethers";
 import "@nomiclabs/hardhat-truffle5";
 import "@nomiclabs/hardhat-solhint";
-import "@openzeppelin/hardhat-upgrades";
 import "solidity-coverage";
-import "@tenderly/hardhat-tenderly";
 import "@typechain/hardhat";
 
 const argv = yargs
@@ -54,8 +52,8 @@ const config: HardhatUserConfig = {
     },
   },
   paths: {
-    sources: "./contracts",
-        tests: "./tests",
+    sources: "./scripts/utils",
+    tests: "./tests",
 
   },
   namedAccounts: {
